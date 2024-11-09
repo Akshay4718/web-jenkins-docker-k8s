@@ -7,7 +7,9 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/Akshay4718/react-jenkins-docker-k8s.git'
+                 git url: 'https://github.com/Akshay4718/web-jenkins-docker-k8s.git',
+                    credentialsId: 'GITHUB_CREDENTIALS',
+                    branch: 'main'
             }
         }
         stage('Build') {
