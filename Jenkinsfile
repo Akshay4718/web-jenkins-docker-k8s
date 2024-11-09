@@ -1,36 +1,38 @@
 pipeline {
     agent any
-
+    environment {
+        DOCKER_HUB_CREDENTIALS = credentials('dockerhub-credentials')
+        DOCKER_IMAGE = "your-dockerhub-username/react-jenkins-docker-k8s"
+    }
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
+                git branch: 'main', url: 'https://github.com/your-username/react-jenkins-docker-k8s.git'
             }
         }
-
-        stage('Build Docker Image') {
+        stage('Build') {
             steps {
-                sh 'docker build -t akshay1867/web-jenkins-docker-k8s .'
+                script {
+                    docker.build(DOCKER_IMAGE)
+                }
             }
         }
-
         stage('Push to Docker Hub') {
             steps {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', 'DOCKER_HUB_CREDENTIALS') {
-                        sh 'docker push akshay1867/web-jenkins-docker-k8s:latest'
+                        docker.image(DOCKER_IMAGE).push("latest")
                     }
                 }
             }
         }
-
         stage('Deploy to Kubernetes') {
             steps {
-                // List files to verify the file location
-                sh 'ls -R $WORKSPACE'
-                
-                // Update path as needed
-                sh 'kubectl apply -f $WORKSPACE/web-jenkins-docker-k8s/k8s-deployment.yaml'
+                script {
+                    // Apply the deployment and service configurations
+                    sh "kubectl apply -f ~/web-jenkins-docker-k8s/k8s-deployment.yaml"
+                    sh "kubectl apply -f ~/web-jenkins-docker-k8s/k8s-service.yaml"
+                }
             }
         }
     }
