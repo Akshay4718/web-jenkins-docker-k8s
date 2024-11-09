@@ -30,7 +30,7 @@ pipeline {
                 sh 'ls -R $WORKSPACE'
                 
                 // Update path as needed
-                sh 'kubectl apply -f $WORKSPACE/k8s-deployment/k8s-deployment.yaml'
+                sh 'kubectl apply -f $WORKSPACE/web-jenkins-docker-k8s/k8s-deployment.yaml'
             }
         }
     }
